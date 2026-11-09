@@ -2,28 +2,30 @@
 
 本文件是本项目的代理工作约定。`.agents/skills/` 下的技能正文来自 `D:\starters`，默认按模板路径与 WSL/gcc 工具链书写；**实际执行以本文件为准**。
 
+> 说明：`.agents/skills/`、`agents/`、`scripts/`、`reference/opensource/` 仅本地保留，**不随仓库提交**；仓库中的固件、PC 工具与文档不依赖它们。
+
 ## 1. 项目
 
 - 题目：宠物视频监控系统
 - 平台：正点原子战舰V3（STM32F103ZET6，512KB Flash / 64KB RAM）
-- 外设：OV7670 + AL422 FIFO、2.8 寸 LCD（FSMC）、ATK-ESP8266、安卓 APP
+- 外设：OV7670 + AL422 FIFO、NT35310 3.5 寸 LCD（FSMC）、ATK-ESP8266（未到货，当前用 PC 中继 + Web APP）
 - 指标：本地 QVGA ≥10 fps；远程 QQVGA ≥3 fps；端到端延迟 <1 s
-- 总计划：`README.md`；执行清单：`TASKS.md`；当前状态：`HANDOFF.md`
+- 总计划：`README.md`；执行清单：`TASKS.md`；当前状态：`HANDOFF.md`（本地）
 
 ## 2. 当前环境（2026-11-09 检测）
 
 | 项 | 状态 |
 |---|---|
 | 开发板 | 战舰V3 已上电，板载 CH340 在线，**COM22**，驱动正常 |
-| ST-Link | **未连接**（驱动已装，无下载器） |
-| 烧录 | 当前只能串口 ISP：BOOT0=1 + ATK-XISP；ST-Link 到位后走 SWD |
+| ST-Link | **已连接**；Keil 的 ST-Link DLL 不可用，改用 OpenOCD 烧录 |
+| 烧录 | OpenOCD + ST-Link（SWD）；备用：BOOT0=1 + ATK-XISP 串口 ISP |
 | Keil | MDK 5.24a，`C:\Keil_v5\UV4\UV4.exe`，ARMCC/AC5，STM32F1xx_DFP 2.2.0 |
 | CubeMX | 6.13.0，`D:\stm32cubemx\STM32CubeMX.exe`；CubeMX 工程仅作备选 |
 | F1 固件包 | `C:\Users\18149\STM32Cube\Repository\STM32Cube_FW_F1_V1.8.6` |
-| Python | `C:\Users\18149\miniconda3\python.exe` 已带 pyserial 3.5；PATH 中的 Python 3.11 未装 pyserial |
-| 摄像头 | OV7670 已插在板上，**是否带 AL422 FIFO 尚未确认（T0.1）** |
-| WiFi | ATK-ESP8266 **未到货** |
-| Android Studio | **未安装** |
+| Python | Miniconda 3.11 带 pyserial 3.5 + Pillow；系统 Python 3.11 带 python-docx / python-pptx |
+| 摄像头 | OV7670 + AL422 FIFO（22 脚，板载晶振），PID=0x76 / VER=0x73 |
+| WiFi | ATK-ESP8266 未到货；当前远程方案为 PC 中继 + 手机 Web APP |
+| Android Studio | 未安装；手机端使用浏览器 Web APP |
 | 正点原子资料 | `D:\BaiduNetdiskDownload\【正点原子】战舰STM32F103开发板V4 资料盘(A盘)` |
 
 ## 3. 技能与路径映射
@@ -62,14 +64,12 @@ firmware/      Keil 工程与固件源码（drivers/、tests/ 在此之下）
 app/           安卓 APP 工程
 pc-tools/      PC 收流脚本（pyserial + 帧解析）
 docs/
-  reference/   工具链契约、HIL 清单、flow、图表规范
+  reference/   工具链契约、HIL 清单、引脚/协议/接线
   logs/        每日调试日志 YYYY-MM-DD.md
   experiments/ 帧率/延迟/吞吐测试记录
   report/      设计报告
   deliverables/原理图 PDF、使用说明、PPT、演示视频
-reference/     芯片手册、正点原子资料、开源参考工程
-agents/        角色提示词模板（不自动加载）
-scripts/       read-doc.py 等工具
+reference/     芯片手册、正点原子资料（本地）
 ```
 
 ## 5. 工具链与构建
@@ -129,12 +129,12 @@ scripts/       read-doc.py 等工具
 
 见 `TASKS.md`。主线：
 
-`环境/串口 ISP → Keil + LCD 骨架 → OV7670+FIFO（保底） → 降采样+JPEG → PC 直连收流 → ESP8266 → 安卓 APP → 联调测试 → 报告/PPT`
+`环境/烧录 → Keil + LCD 骨架 → OV7670+FIFO（保底） → RGB332 + 校验/DMA → PC 中继 + Web APP → 联调测试 → 报告/PPT（ESP8266 为可选升级）`
 
 ## 10. 禁止 / 注意
 
 - 不要复制或启用 starters 的 `.zcode/config.json` 与 `hooks/`：模板守卫会把构建强制走 WSL，与 Windows 下的 Keil 冲突。
-- 不要修改 `.agents/skills/*/SKILL.md`：那是上游模板；项目适配统一写在本文件。
+- 不要修改 `.agents/skills/*/SKILL.md`（本地）：那是上游模板；项目适配统一写在本文件。
 - 不要把 OV7670 当 OV7725 用：正点原子例程的寄存器/时序按 OV7725 写，OV7670 必须按自己的手册改。
 - 不要忽略 RAM 预算：QQVGA RGB565 缓冲约 37.5 KB，F103 只有 64 KB。
 - 不要在未确认 OV7670 是否带 FIFO 前开始摄像头接线：不带 FIFO 的模块无法按本方案采集。

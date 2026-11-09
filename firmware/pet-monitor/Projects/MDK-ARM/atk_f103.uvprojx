@@ -434,16 +434,6 @@
               <FilePath>..\..\Drivers\BSP\LCD\lcd.c</FilePath>
             </File>
             <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\BSP\KEY\key.c</FilePath>
-            </File>
-            <File>
-              <FileName>ov7725.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\BSP\OV7725\ov7725.c</FilePath>
-            </File>
-            <File>
               <FileName>ov7670.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\BSP\OV7670\ov7670.c</FilePath>
@@ -454,11 +444,6 @@
               <FilePath>..\..\Drivers\BSP\OV7725\sccb.c</FilePath>
             </File>
             <File>
-              <FileName>tpad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\BSP\TPAD\tpad.c</FilePath>
-            </File>
-            <File>
               <FileName>exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\BSP\EXTI\exti.c</FilePath>
@@ -467,41 +452,6 @@
               <FileName>btim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\BSP\TIMER\btim.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/USMART</GroupName>
-          <Files>
-            <File>
-              <FileName>usmart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Middlewares\USMART\usmart.c</FilePath>
-            </File>
-            <File>
-              <FileName>usmart_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Middlewares\USMART\usmart_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>usmart_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Middlewares\USMART\usmart_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>usmart_str.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Middlewares\USMART\usmart_str.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Readme</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\readme.txt</FilePath>
             </File>
           </Files>
         </Group>

@@ -13,4 +13,4 @@
 
 - `hardware-interface` 是**接口级原理图**，重点是把 22 脚 OV7670 模块与板载 P6 的 18 针、LCD FSMC、USART1、SWD 的对应关系画清楚；不包含完整的电阻/电容/电源树。
 - 如果学校要求完整的电气原理图，可在立创 EDA 里按 `docs/reference/pinmap.md` 重绘，导出 PDF 替换本图。
-- 所有图由 `scripts/make_figures.py` + `scripts/make_figures_fix.py` 生成，可修改脚本后重新导出。
+- 图已生成；生成脚本仅本地保留，不随仓库提交。

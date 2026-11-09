@@ -84,3 +84,17 @@ reference/opensource/**/demo.png
 
 # ---- ZCode 内部计划缓存 ----
 .zcode/plans/
+
+# ---- 本地参考/技能/脚本（不提交） ----
+.agents/
+agents/
+reference/opensource/
+docs/reference/flow/
+docs/reference/experiments/
+docs/reference/flash-debug.md
+docs/reference/hil-guide.md
+docs/reference/peripheral-select.md
+docs/reference/figure-specs.md
+docs/reference/交付模板.md
+scripts/
+docs/deliverables/pet-monitor-local-v0.hex
