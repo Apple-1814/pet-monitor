@@ -1,0 +1,86 @@
+# ---- Keil MDK ----
+*.uvguix.*
+*.uvguix
+*.uvopt.bak
+*.uvproj.bak
+Objects/
+Listings/
+DebugConfig/
+RTE/
+build/
+*.hex
+*.bin
+*.axf
+*.elf
+*.map
+*.lst
+*.o
+*.d
+*.crf
+*.dep
+*.lnp
+*.sct
+*.iex
+*.htm
+*.build_log.htm
+JLinkLog.txt
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ---- Android ----
+.gradle/
+app/build/
+build/
+local.properties
+*.iml
+.idea/
+*.apk
+*.aab
+captures/
+
+# ---- OS / editor ----
+Thumbs.db
+.DS_Store
+.vscode/
+*.log
+
+# ---- 含个人信息的最终文档（仅保留本地，不提交） ----
+HANDOFF.md
+docs/report/
+docs/deliverables/交付物清单.md
+docs/deliverables/宠物视频监控系统-使用说明书.docx
+docs/deliverables/宠物视频监控系统-使用说明书.pdf
+docs/deliverables/宠物视频监控系统-答辩PPT.pptx
+docs/deliverables/宠物视频监控系统-答辩PPT.pdf
+docs/deliverables/photos/
+docs/deliverables/remote-snapshot-192x144.jpg
+scripts/make_report.py
+scripts/make_manual.py
+scripts/make_ppt.py
+农业物联网综合设计题目26年.ppt
+农业物联网综合设计题目26年.pdf
+农业物联网综合设计题目26年.txt
+
+# ---- 课设临时文件 ----
+docs/logs/*.tmp
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
+# ---- 报告/PPT 渲染中间产物（不提交） ----
+docs/deliverables/report_pages/
+docs/deliverables/ppt_pages/
+docs/deliverables/manual_pages/
+
+# ---- Keil 构建输出目录（HEX 交付件单独 force-add） ----
+firmware/pet-monitor/Output/
+
+# ---- 参考工程里的演示图（体积大，不提交） ----
+reference/opensource/**/demo.png
+
+# ---- ZCode 内部计划缓存 ----
+.zcode/plans/

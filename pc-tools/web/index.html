@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>宠物视频监控 · Web APP</title>
+<style>
+  :root {
+    --bg: #0b1220; --card: #121a2b; --text: #e8eefc; --muted: #8fa3c4;
+    --green: #38d39f; --red: #ff6b6b; --blue: #4da3ff; --border: rgba(255,255,255,.08);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(77,163,255,.18), transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, rgba(56,211,159,.12), transparent 60%),
+      var(--bg);
+    min-height: 100dvh; display: flex; justify-content: center; padding: 14px;
+  }
+  .app { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 12px; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 4px 2px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 38px; height: 38px; border-radius: 12px;
+    background: linear-gradient(135deg, #4da3ff, #38d39f);
+    display: grid; place-items: center; font-size: 20px;
+    box-shadow: 0 8px 22px rgba(77,163,255,.35); }
+  h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
+  .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .badge { font-size: 11px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted);
+    background: rgba(255,255,255,.03); white-space: nowrap; }
+  .badge.on { color: var(--green); border-color: rgba(56,211,159,.35); background: rgba(56,211,159,.08); }
+  .badge.off { color: var(--red); border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08); }
+
+  .video-card { position: relative; width: 100%; aspect-ratio: 4 / 3;
+    background: #05080f; border: 1px solid var(--border);
+    border-radius: 18px; overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0,0,0,.45); }
+  .video-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .overlay { position: absolute; inset: 0; display: grid; place-items: center;
+    background: rgba(3,7,14,.72); color: var(--muted); font-size: 13px;
+    text-align: center; padding: 20px; line-height: 1.7; }
+  .overlay.hidden { display: none; }
+  .spinner { width: 34px; height: 34px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.12); border-top-color: var(--blue);
+    animation: spin 1s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .top-left, .top-right { position: absolute; top: 10px; z-index: 3;
+    font-size: 10px; padding: 4px 8px; border-radius: 8px;
+    background: rgba(0,0,0,.45); color: #dfe9ff; backdrop-filter: blur(6px); }
+  .top-left { left: 10px; } .top-right { right: 10px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+    border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; }
+  .stat .k { font-size: 10px; color: var(--muted); letter-spacing: .4px; }
+  .stat .v { font-size: 17px; font-weight: 700; margin-top: 4px; }
+  .stat .v small { font-size: 10px; color: var(--muted); font-weight: 500; }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { appearance: none; border: 1px solid var(--border); border-radius: 14px;
+    background: linear-gradient(180deg, #1d2a42, #141e31);
+    color: var(--text); font-size: 14px; padding: 12px 10px; font-weight: 600;
+    transition: transform .06s ease, filter .2s ease; }
+  button:active { transform: scale(.98); filter: brightness(1.15); }
+  button.primary { background: linear-gradient(135deg, #2f7cf6, #38d39f);
+    border-color: transparent; color: #04121a; }
+  .foot { color: var(--muted); font-size: 11px; text-align: center; line-height: 1.7; padding: 4px 8px 10px; }
+  .foot b { color: #cfe0ff; font-weight: 600; }
+  @media (max-width: 360px) { h1 { font-size: 16px; } .stat .v { font-size: 15px; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">🐾</div>
+      <div>
+        <h1>宠物视频监控</h1>
+        <div class="sub">STM32 + OV7670 · PC Relay · Web APP</div>
+      </div>
+    </div>
+    <div id="conn" class="badge off">未连接</div>
+  </header>
+
+  <div class="video-card" id="videoCard">
+    <div class="top-left" id="resLabel">160 × 120</div>
+    <div class="top-right" id="fpsMini">-- fps</div>
+    <img id="video" alt="实时视频" />
+    <div class="overlay" id="overlay">
+      <div>
+        <div class="spinner"></div>
+        等待视频流…<br>
+        <span style="font-size:11px">请确认 PC 中继已启动，手机与电脑在同一 WiFi</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">连接状态</div><div class="v" id="statConn">离线</div></div>
+    <div class="stat"><div class="k">源帧率</div><div class="v" id="statFps">-- <small>fps</small></div></div>
+    <div class="stat"><div class="k">分辨率</div><div class="v" id="statRes">160×120</div></div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" id="btnFull">全屏观看</button>
+    <button id="btnReconnect">重新连接</button>
+  </div>
+
+  <div class="foot">
+    当前为 <b>PC 中继模式</b>：STM32 → USART1 → 电脑 → WiFi → 手机<br>
+    Web APP 使用 JPEG 轮询（5fps），兼容所有手机浏览器
+  </div>
+</div>
+
+<script>
+(function () {
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const conn = document.getElementById('conn');
+  const statConn = document.getElementById('statConn');
+  const statFps = document.getElementById('statFps');
+  const statRes = document.getElementById('statRes');
+  const fpsMini = document.getElementById('fpsMini');
+  const resLabel = document.getElementById('resLabel');
+  const btnFull = document.getElementById('btnFull');
+  const btnReconnect = document.getElementById('btnReconnect');
+  const videoCard = document.getElementById('videoCard');
+
+  let running = true;
+  let timer = null;
+  let currentBlobUrl = null;
+  let failCount = 0;
+
+  function setConnected(ok, text) {
+    conn.textContent = text || (ok ? '已连接' : '未连接');
+    conn.classList.toggle('on', !!ok);
+    conn.classList.toggle('off', !ok);
+    statConn.textContent = ok ? '在线' : '离线';
+    statConn.style.color = ok ? 'var(--green)' : 'var(--red)';
+  }
+
+  function showOverlay(html) {
+    overlay.innerHTML = html;
+    overlay.classList.remove('hidden');
+  }
+
+  function hideOverlay() {
+    overlay.classList.add('hidden');
+  }
+
+  async function pollFrame() {
+    if (!running) return;
+    try {
+      const r = await fetch('/snapshot.jpg?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error('no frame');
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const old = currentBlobUrl;
+      currentBlobUrl = url;
+      video.src = url;
+      if (old) setTimeout(function () { URL.revokeObjectURL(old); }, 1200);
+      failCount = 0;
+      hideOverlay();
+      setConnected(true, '已连接');
+      timer = setTimeout(pollFrame, 200);
+    } catch (e) {
+      failCount++;
+      if (failCount === 1) {
+        showOverlay('<div><div class="spinner"></div>等待画面…</div>');
+      }
+      setConnected(false, '等待画面');
+      timer = setTimeout(pollFrame, 500);
+    }
+  }
+
+  btnReconnect.addEventListener('click', function () {
+    clearTimeout(timer);
+    running = true;
+    showOverlay('<div><div class="spinner"></div>正在重新连接…</div>');
+    pollFrame();
+  });
+
+  btnFull.addEventListener('click', async function () {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (videoCard.requestFullscreen) {
+        await videoCard.requestFullscreen();
+      } else if (videoCard.webkitRequestFullscreen) {
+        videoCard.webkitRequestFullscreen();
+      }
+    } catch (e) {
+      window.open('/snapshot.jpg', '_blank');
+    }
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      running = false;
+      clearTimeout(timer);
+    } else {
+      running = true;
+      clearTimeout(timer);
+      pollFrame();
+    }
+  });
+
+  async function pollStatus() {
+    try {
+      const r = await fetch('/status?t=' + Date.now(), { cache: 'no-store' });
+      const s = await r.json();
+      const fps = (s.fps || 0).toFixed(1);
+      statFps.innerHTML = fps + ' <small>fps</small>';
+      fpsMini.textContent = fps + ' fps';
+      const parts = (s.resolution || '160x120').split('x');
+      if (parts.length === 2) {
+        statRes.textContent = parts[0] + '×' + parts[1];
+        resLabel.textContent = parts[0] + ' × ' + parts[1];
+      }
+      if (s.serial_connected || s.serial_frames > 0) {
+        setConnected(true, '已连接');
+      } else {
+        setConnected(false, '等待串口');
+      }
+    } catch (e) {
+      setConnected(false, '服务离线');
+    } finally {
+      setTimeout(pollStatus, 2000);
+    }
+  }
+
+  pollFrame();
+  pollStatus();
+})();
+</script>
+</body>
+</html>

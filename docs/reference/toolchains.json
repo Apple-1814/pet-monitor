@@ -1,0 +1,67 @@
+{
+  "project": "pet-monitor",
+  "targets": {
+    "stm32f103zetx": {
+      "family": "STM32F1",
+      "core": "Cortex-M3",
+      "board": "ALIENTEK Warship V3 (正点原子战舰V3)",
+      "mcu": "STM32F103ZET6",
+      "memory": {
+        "flash_kb": 512,
+        "ram_kb": 64
+      },
+      "compiler": {
+        "name": "Keil MDK-ARM (ARMCC/AC5)",
+        "version": "5.24a",
+        "pack": "Keil.STM32F1xx_DFP 2.2.0",
+        "verify": "test -f \"C:/Keil_v5/UV4/UV4.exe\" && test -f \"C:/Keil_v5/ARM/ARMCC/bin/armcc.exe\""
+      },
+      "sdk": {
+        "name": "STM32F10x Standard Peripheral Library (ALIENTEK example baseline)",
+        "version": "V3.5.0",
+        "note": "正点原子例程以标准库为主;CubeMX 6.13 + STM32Cube_FW_F1_V1.8.6 仅作备选"
+      },
+      "hal_level": "标准库 (StdPeriph)",
+      "build": {
+        "name": "Keil uVision batch build",
+        "command": "\"C:/Keil_v5/UV4/UV4.exe\" -b <project.uvprojx> -j0 -o build.log",
+        "verify": "build.log 中出现 0 Error(s)"
+      },
+      "flash": {
+        "primary": {
+          "name": "Serial ISP via on-board CH340",
+          "port": "COM22",
+          "tool": "ATK-XISP.exe (正点原子资料盘)",
+          "steps": "BOOT0=1 -> 复位 -> ATK-XISP 下载 -> BOOT0=0 -> 复位运行",
+          "verify": "mode | findstr COM22"
+        },
+        "secondary": {
+          "name": "ST-Link V2 SWD",
+          "status": "驱动已安装, 下载器当前未连接",
+          "verify": "Keil Options -> Debug -> ST-Link Debugger"
+        }
+      },
+      "debug": {
+        "current": "printf over USART1 @115200 via CH340/COM22",
+        "future": "ST-Link SWD 断点/单步",
+        "note": "USB_232 (CH340) 只接 USART1, 不能做 SWD 在线调试"
+      },
+      "uart": {
+        "debug": {
+          "peripheral": "USART1",
+          "baud": 115200,
+          "pins": "PA9(TX)/PA10(RX)",
+          "transport": "板载 CH340 -> COM22"
+        },
+        "esp8266": {
+          "peripheral": "USART2",
+          "baud": [460800, 921600],
+          "pins": "PA2(TX)/PA3(RX)",
+          "status": "预留; ATK-ESP8266 模块未到货"
+        }
+      }
+    }
+  },
+  "default_target": "stm32f103zetx",
+  "note": "本文件是本课设工具链版本的唯一来源。技能正文中的 tooling/toolchains.json 一律指本文件;改版本须在 docs/logs 与交付文档记录原因。"
+}
